@@ -1,7 +1,8 @@
 ﻿using System;
 using NAudio.Wave;
+using System.Diagnostics;
 
-namespace KeyboardPiano
+namespace InteractivePiano
 {
     /// <summary>
     /// This class is used to play a stream of doubles that represent audio samples
@@ -39,10 +40,9 @@ namespace KeyboardPiano
         }
 
         public void Dispose() {
-            instance = null;
             _waveOut.Stop();
-            _waveOut = null;
-            _bufferedWaveProvider = null;
+            _waveOut.Dispose();
+            _bufferedWaveProvider.ClearBuffer();
         }
 
         /// <summary>
