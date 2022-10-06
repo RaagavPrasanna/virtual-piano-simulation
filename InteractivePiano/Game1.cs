@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PianoSimulation;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace InteractivePiano
 {
@@ -18,28 +19,43 @@ namespace InteractivePiano
 
         private Piano piano; 
 
+        private List<PianoKeySprite> pianoKeys;
         public InteractivePianoGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            piano = new Piano();
+            piano = new Piano("q2we4r5ty7u8i9op-[=");
             audio = Audio.Instance;
             newKey = false;
+            pianoKeys = new List<PianoKeySprite>();
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            int incrementPos = 0;
+            char[] pianoChars = piano.Keys.ToCharArray();
+            for(int i =0; i<pianoChars.Length; i++) {
+                PianoKeySprite ps;
+                if(i % 2 == 0) {
+                    ps = new PianoKeySprite(this, pianoChars[i], "white", incrementPos, 0, 200, 200);
+                } else {
+                    ps =new PianoKeySprite(this, pianoChars[i], "black", incrementPos, 0, 200, 200);
+                    incrementPos += ps.Width / 4; 
+                }
+                pianoKeys.Add(ps);
+                Components.Add(ps);
+            }
 
-            //     Debug.WriteLine("entered");
-            //     Piano p = new Piano();
-            //     using(var audio = Audio.Instance) {
-            //     p.StrikeKey('q');
-                // for(int i =0; i< 44100; i++) {
-                //     audio.Play(p.Play());
-                // }
-            // }
+            // PianoKeySprite ps = new PianoKeySprite(this, 'q', "white", 0, 0, 200, 200);
+            // PianoKeySprite ss = new PianoKeySprite(this, 'q', "black", 0, 0, 200, 200);
+            // PianoKeySprite ds = new PianoKeySprite(this, 'q', "white", 50, 0, 200,200);
+            // PianoKeySprite ks = new PianoKeySprite(this, 'q', "white", 100, 0, 200,200);
+            // Components.Add(ps);
+            // Components.Add(ss);
+            // Components.Add(ds);
+            // Components.Add(ks);
 
             Task t = new Task(() => {
                 while(true) {
