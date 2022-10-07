@@ -25,24 +25,41 @@ namespace InteractivePiano
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            piano = new Piano("q2we4r5ty7u8i9op-[=");
+            piano = new Piano();
             audio = Audio.Instance;
             newKey = false;
             pianoKeys = new List<PianoKeySprite>();
         }
 
+
+        private bool isBlack(int i) {
+            if(i == 1 || i == 4 || i == 6 || i == 9 || i == 11 || i == 13 || i == 16 || i == 18 || i == 21 || 
+                i == 23 || i == 25 || i == 28 || i == 30 || i == 33 || i == 35) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         protected override void Initialize()
         {
+
+
             // TODO: Add your initialization logic here
             int incrementPos = 0;
             char[] pianoChars = piano.Keys.ToCharArray();
             for(int i =0; i<pianoChars.Length; i++) {
                 PianoKeySprite ps;
-                if(i % 2 == 0) {
-                    ps = new PianoKeySprite(this, pianoChars[i], "white", incrementPos, 0, 200, 200);
+                if(isBlack(i)) {
+                    Debug.WriteLine("make black");
+                    ps = new PianoKeySprite(this, pianoChars[i], "black", incrementPos, 0, 200, 200);
+                    incrementPos += ps.Width / 4;
                 } else {
-                    ps =new PianoKeySprite(this, pianoChars[i], "black", incrementPos, 0, 200, 200);
-                    incrementPos += ps.Width / 4; 
+                    Debug.WriteLine("make white");
+                    ps = new PianoKeySprite(this, pianoChars[i], "white", incrementPos, 0, 200, 200);
+                    if(!(isBlack(i + 1))) {
+                        incrementPos += ps.Width / 4;
+                    } 
                 }
                 pianoKeys.Add(ps);
                 Components.Add(ps);
@@ -70,6 +87,11 @@ namespace InteractivePiano
             t.Start();
 
             base.Initialize();
+
+            _graphics.PreferredBackBufferHeight =  GraphicsDevice.DisplayMode.Height;
+            _graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+            _graphics.IsFullScreen = true;
+            _graphics.ApplyChanges();
         }
 
         protected override void LoadContent()
@@ -88,14 +110,27 @@ namespace InteractivePiano
 
             if(Keyboard.GetState().GetPressedKeyCount() > 0) {
                 if(prevKeyboard != Keyboard.GetState()) {
+                    foreach(PianoKeySprite key in pianoKeys) {
+                        key.Release();
+                    }
                     newKey = true;
                     Keys[] pressedKeys = Keyboard.GetState().GetPressedKeys();
                     foreach(Keys key in pressedKeys) {
-                        piano.StrikeKey(key.ToString().ToLower()[key.ToString().Length - 1]);
+                        char hitKey = key.ToString().ToLower()[key.ToString().Length - 1];
+                        piano.StrikeKey(hitKey);
+                        foreach(PianoKeySprite pressKey in pianoKeys) {
+                            if(pressKey.Note == hitKey) {
+                                pressKey.Press();
+                            } 
+                        }
                     }
                 }
                 else {
                     newKey = false;
+                }
+            } else {
+                foreach(PianoKeySprite key in pianoKeys) {
+                    key.Release();
                 }
             }
             prevKeyboard = Keyboard.GetState();

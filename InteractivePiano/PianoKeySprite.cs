@@ -15,6 +15,7 @@ namespace InteractivePiano {
     public int Y {get;}
     public int Width{get;}
     public int Height {get;}
+    private bool pressed;
 
     public PianoKeySprite(InteractivePianoGame game, char note, string color, int x, int y, int width, int height): base(game){
       _game = game;
@@ -28,6 +29,7 @@ namespace InteractivePiano {
 
       Width = width;
       Height = height;
+      pressed = false;
     }
 
     protected override void LoadContent() {
@@ -42,16 +44,34 @@ namespace InteractivePiano {
 
     public override void Update(GameTime gameTime)
     {
+      // _spriteBatch.Begin();
+      // if(pressed) {
+      //   _spriteBatch.Draw(_keyTexture, new Rectangle(X, Y, Width, Height), Color.Red);
+      // } else {
+      //   _spriteBatch.Draw(_keyTexture, new Rectangle(X, Y, Width, Height), Color.White);
+      // }
+      // _spriteBatch.End();
+      // base.Draw(gameTime);
       base.Update(gameTime);
     }
 
     public override void Draw(GameTime gameTime)
    {  
       _spriteBatch.Begin();
-      //_spriteBatch.Draw(_keyTexture, new Vector2(_x, _y), Color.White);
-      _spriteBatch.Draw(_keyTexture, new Rectangle(X, Y, Width, Height), Color.White);
+      if(pressed) {
+        _spriteBatch.Draw(_keyTexture, new Rectangle(X, Y, Width, Height), Color.Red);
+      } else {
+        _spriteBatch.Draw(_keyTexture, new Rectangle(X, Y, Width, Height), Color.White);
+      }
       _spriteBatch.End();
       base.Draw(gameTime);
+    }
+
+    public void Press() { 
+      pressed = true;
+    }
+    public void Release() {
+      pressed = false;
     }
   }
 }
