@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework.Input;
 using PianoSimulation;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
+using System.Text.RegularExpressions;
 
 namespace InteractivePiano
 {
@@ -51,11 +53,9 @@ namespace InteractivePiano
             for(int i =0; i<pianoChars.Length; i++) {
                 PianoKeySprite ps;
                 if(isBlack(i)) {
-                    Debug.WriteLine("make black");
                     ps = new PianoKeySprite(this, pianoChars[i], "black", incrementPos, 0, 200, 200);
                     incrementPos += ps.Width / 4;
                 } else {
-                    Debug.WriteLine("make white");
                     ps = new PianoKeySprite(this, pianoChars[i], "white", incrementPos, 0, 200, 200);
                     if(!(isBlack(i + 1))) {
                         incrementPos += ps.Width / 4;
@@ -65,19 +65,10 @@ namespace InteractivePiano
                 Components.Add(ps);
             }
 
-            // PianoKeySprite ps = new PianoKeySprite(this, 'q', "white", 0, 0, 200, 200);
-            // PianoKeySprite ss = new PianoKeySprite(this, 'q', "black", 0, 0, 200, 200);
-            // PianoKeySprite ds = new PianoKeySprite(this, 'q', "white", 50, 0, 200,200);
-            // PianoKeySprite ks = new PianoKeySprite(this, 'q', "white", 100, 0, 200,200);
-            // Components.Add(ps);
-            // Components.Add(ss);
-            // Components.Add(ds);
-            // Components.Add(ks);
 
             Task t = new Task(() => {
                 while(true) {
                     if(newKey) {
-                        Debug.WriteLine("new Key pressed");
                         audio.Reset();
                     }
                     audio.Play(piano.Play());
@@ -116,8 +107,15 @@ namespace InteractivePiano
                     newKey = true;
                     Keys[] pressedKeys = Keyboard.GetState().GetPressedKeys();
                     foreach(Keys key in pressedKeys) {
-                        char hitKey = key.ToString().ToLower()[key.ToString().Length - 1];
-                        piano.StrikeKey(hitKey);
+                        //Debug.WriteLine(key.ToString().ToLower());
+                        //char hitKey = key.ToString().ToLower()[key.ToString().Length - 1];
+                        char hitKey = determineCharEqv(key.ToString()); 
+                        Debug.WriteLine(key.ToString());
+                        try {
+                            piano.StrikeKey(hitKey);
+                        } catch(ArgumentException e) {
+                            Debug.WriteLine(e);
+                        }
                         foreach(PianoKeySprite pressKey in pianoKeys) {
                             if(pressKey.Note == hitKey) {
                                 pressKey.Press();
@@ -134,20 +132,6 @@ namespace InteractivePiano
                 }
             }
             prevKeyboard = Keyboard.GetState();
-            // using(var audio = Audio.Instance) {
-                // var audio = Audio.Instance;
-                // for(int i =0; i< 44100 * 3; i++) {
-                //     audio.Play(piano.Play());
-                // }
-                // Debug.WriteLine(piano.Play());
-            // }
-                
-
-            // TODO: Add your update logic here
-            // if(Keyboard.GetState().GetPressedKeys().Length != 0) {
-            //     Debug.WriteLine(Keyboard.GetState().GetPressedKeys()[0].ToString().ToLower().ToCharArray()[0]);
-            // }
-
 
             base.Update(gameTime);
         }
@@ -160,5 +144,34 @@ namespace InteractivePiano
 
             base.Draw(gameTime);
         }
+
+        public char determineCharEqv(string key) {
+            if(key == "OemMinus") {
+                return '-';
+            } else if(key == "OemOpenBrackets") {
+                return '[';
+            } else if(key == "OemPlus") {
+                return '=';
+            } else if(key == "OemPeriod") {
+                return '.';
+            } else if(key == "OemSemicolon") {
+                return ';';
+            } else if(key == "OemQuestion") {
+                return '/';
+            } else if(key == "OemQuotes") {
+                return "'"[0];
+            } else if(key == "Space") {
+                return ' ';
+            } else if(key == "OemComma") {
+                return ',';
+            } else if((new Regex(@"^[D]\d", RegexOptions.Compiled)).IsMatch(key)) {
+                return key[1];
+            } else if(key.Length > 1) {
+                return '3';
+            }
+
+            return key.ToString().ToLower()[0];
+        }
+
     }
 }

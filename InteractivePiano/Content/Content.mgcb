@@ -25,6 +25,13 @@
 /processorParam:TextureFormat=Color
 /build:Black_Piano_Key.png
 
+#begin Note.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Note.spritefont
+
 #begin White_Piano_Key.png
 /importer:TextureImporter
 /processor:TextureProcessor
