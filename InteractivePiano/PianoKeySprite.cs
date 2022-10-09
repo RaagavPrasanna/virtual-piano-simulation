@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
-using System.Diagnostics;
 
 namespace InteractivePiano {
   public class PianoKeySprite : DrawableGameComponent {
@@ -20,6 +18,7 @@ namespace InteractivePiano {
     private const string charKeys = "q2we4r5ty7u8i9op-[=zxdcfvgbnjmk,.;/' ";
     private readonly string[] noteLetters = new string[]{"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 
+    // Intialize following attributes.
     public PianoKeySprite(InteractivePianoGame game, char note, string color, int x, int y, int width, int height): base(game){
       _game = game;
       Note = note;
@@ -35,6 +34,7 @@ namespace InteractivePiano {
       _pressed = false;
     }
 
+    // Loads content for sprite.
     protected override void LoadContent() {
       _spriteBatch = new SpriteBatch(GraphicsDevice);
       _font = _game.Content.Load<SpriteFont>("Note");
@@ -46,11 +46,13 @@ namespace InteractivePiano {
       }
     }
 
+    // Update method.
     public override void Update(GameTime gameTime)
     {
       base.Update(gameTime);
     }
 
+    // Draws the piano key and letters.
     public override void Draw(GameTime gameTime)
    {  
       _spriteBatch.Begin();
@@ -69,13 +71,17 @@ namespace InteractivePiano {
       base.Draw(gameTime);
     }
 
+    // Method to press the key.
     public void Press() { 
       _pressed = true;
     }
+
+    // Method to release the key.
     public void Release() {
       _pressed = false;
     }
 
+    // Helper method to determine the corresponding note of a pressed key.
     private string determineNoteLetter() {
       for(int i =0; i < charKeys.Length; i++) {
         if(Note == charKeys[i]) {

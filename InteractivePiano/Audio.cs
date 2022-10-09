@@ -1,6 +1,5 @@
 ﻿using System;
 using NAudio.Wave;
-using System.Diagnostics;
 
 namespace InteractivePiano
 {
@@ -67,18 +66,19 @@ namespace InteractivePiano
         /// </summary>
         /// <param name="input">Sample to be played</param>
         public void Play(double input)
-        {
-            // clip if outside [-1, +1]
-            short s = ConvertToShort(input);
-            byte[] temp = BitConverter.GetBytes(s);
-            _buffer[_bufferCount++] = temp[0];
-            _buffer[_bufferCount++] = temp[1]; //little Endian
+        {   lock(padlock) {
+                // clip if outside [-1, +1]
+                short s = ConvertToShort(input);
+                byte[] temp = BitConverter.GetBytes(s);
+                _buffer[_bufferCount++] = temp[0];
+                _buffer[_bufferCount++] = temp[1]; //little Endian
 
-            // send to sound card if buffer is full        
-            if (_bufferCount >= _buffer.Length)
-            {
-                _bufferCount = 0;
-                _bufferedWaveProvider.AddSamples(_buffer, 0, _buffer.Length);
+                // send to sound card if buffer is full        
+                if (_bufferCount >= _buffer.Length)
+                {
+                    _bufferCount = 0;
+                    _bufferedWaveProvider.AddSamples(_buffer, 0, _buffer.Length);
+                }
             }
 
         }
