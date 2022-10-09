@@ -33,7 +33,7 @@ namespace PianoSimulation
       int ind = this._keys.IndexOf(key);
       if (ind == -1)
       {
-        throw new ArgumentException("Invalid key");
+        throw new ArgumentException($"Invalid key {key}");
       }
       this._wires[ind].Strike();
     }
